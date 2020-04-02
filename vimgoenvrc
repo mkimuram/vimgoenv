@@ -1,0 +1,5 @@
+# This file defines variables to be used by vimgoenv.
+# Uncomment and modify variables to change configurations.
+
+#IMAGE_NAME="mkimuram/vimgoenv:0.1"
+#MNT_FILES=".ssh .bashrc .gitconfig"

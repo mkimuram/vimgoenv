@@ -1,3 +1,22 @@
 #! /bin/bash
 
-(cd $GOPATH; docker run -it -e uid=$(id -u) -e gid=$(id -g) -v `pwd`:/go mkimuram/vimgoenv:0.1)
+# Source .vimgoenvrc if exists
+FILE=$HOME/.vimgoenvrc && test -f $FILE && source $FILE
+
+# Overwrite IMAGE_NAME and MNT_FILES if set in .vimgoenvrc
+IMAGE_NAME="${IMAGE_NAME:-mkimuram/vimgoenv:0.1}"
+# MNT_FILES is expected to be format of ".ssh .bashrc .gitconfig"
+MNT_FILES="${MNT_FILES:-}"
+
+# Create EXTRA_MNT_ARGS variable from MNT_FILES
+# ex)  
+#    -v $HOME/.ssh:/home/tmp/.ssh -v $HOME/.bashrc:/home/tmp/.bashrc ...
+EXTRA_MNT_ARGS=""
+while read file; do
+	if [ -z "$file" ]; then
+		continue
+	fi
+	EXTRA_MNT_ARGS="$EXTRA_MNT_ARGS -v $HOME/$file:/home/tmp/$file "
+done < <(echo "$MNT_FILES" | tr " " "\n")
+
+(cd $GOPATH; docker run -it -e uid=$(id -u) -e gid=$(id -g) -v `pwd`:/go $EXTRA_MNT_ARGS $IMAGE_NAME)
