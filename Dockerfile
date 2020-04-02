@@ -1,13 +1,13 @@
-FROM registry.access.redhat.com/ubi8/ubi:latest
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 # Install rpms and golang
-RUN dnf install -y vim git curl tar sudo gcc                                    && \
-    dnf update --disableplugin=subscription-manager -y && rm -rf /var/cache/yum && \
-    dnf clean all                                                               && \
-    curl -L https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz -o go.tar.gz   && \
-    tar -C /usr/local -xzf go.tar.gz                                            && \
-    rm go.tar.gz                                                                && \
-    mkdir /go                                                                   && \
+RUN microdnf install -y vim git curl tar sudo gcc                             && \
+    microdnf update -y && rm -rf /var/cache/yum                               && \
+    microdnf clean all                                                        && \
+    curl -L https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz -o go.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz                                          && \
+    rm go.tar.gz                                                              && \
+    mkdir /go                                                                 && \
     mkdir /home/tmp
 
 # Set env
@@ -32,7 +32,7 @@ RUN go get golang.org/x/tools/cmd/godoc                                 && \
     go get github.com/golangci/golangci-lint/cmd/golangci-lint          && \
     mv /go/bin/* /usr/local/go/bin                                      && \
 # Cleanup
-    rm -rf /go/*
+    rm -rf /go/* && go clean -cache -modcache -i -r
 
 # COPY vimrc
 COPY vimrc /home/tmp/.vimrc
