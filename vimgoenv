@@ -1,0 +1,3 @@
+#! /bin/bash
+
+(cd $GOPATH; docker run -it -e uid=$(id -u) -e gid=$(id -g) -v `pwd`:/go vimgoenv:0.1)
